@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{# 引入静态文件，只有加载标签模版后才能使用 {% static %} 标签 #}
+{% load staticfiles %}
+{% load custom_filter %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    {# 在需要引入的地方引入相应文件，例如在 static 文件夹下有个 blog 文件夹，需要引用其 #}
+    {# 中的 css/bootstrap.min.css 文件可以通过如下方式进行引入 #}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+</head>
+<body>
+<h1>{{ welcome }}</h1>
+
+{% if articles %}
+    <h1>{{ articles|get_value:"article"|get_attr:"id" }}</h1>
+{% endif %}
+{% get_all_category as category_list %}
+<ul>
+    {% for category in category_list %}
+        <li>
+            <a href="#">{{ category.name }}</a>
+        </li>
+    {% empty %}
+        There is no category!
+    {% endfor %}
+</ul>
+</body>
+</html>

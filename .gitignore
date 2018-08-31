@@ -156,3 +156,6 @@ media
 .vscode
 
 node_modules/
+
+**/static_root/
+
