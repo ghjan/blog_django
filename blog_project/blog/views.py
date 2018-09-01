@@ -1,4 +1,6 @@
 import datetime
+
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import render, redirect
@@ -10,7 +12,16 @@ from blog.forms import PostForm, ContactForm
 
 
 def home(request):
-    return HttpResponse("Hello django")
+    # context 中的参数名和模版中 {{ }} 包裹的相同
+    post_list = Post.objects.all()
+
+    title = "My Blog Home"
+    welcome = "Welcome to My Blog"
+    # return render(request, 'blog/home.html', context={
+    #     'title': "My Blog Home",
+    #     'welcome': "Welcome to My Blog"
+    # })
+    return render(request, 'blog/home.html', locals())
 
 
 def hours_ahead(request, offset):
@@ -20,14 +31,6 @@ def hours_ahead(request, offset):
         print(e)
     dt = datetime.datetime.now() + datetime.timedelta(hours=offset)
     return HttpResponse("{} hours later is {}".format(offset, dt))
-
-
-def index(request):
-    # context 中的参数名和模版中 {{ }} 包裹的相同
-    return render(request, 'index.html', context={
-        'title': "My Blog Home",
-        'welcome': "Welcome to My Blog"
-    })
 
 
 def new_post(request):
@@ -52,6 +55,7 @@ def new_post(request):
         # 如果不是 POST 重定向到空白的新建页面
         form = PostForm()
     return render(request, 'blog/post_new.html', locals())
+
 
 @csrf_exempt
 def contact(request):
@@ -79,3 +83,17 @@ class FullPostView(ListView):
 
 def about(request):
     return render(request, 'blog/about.html', None)
+
+
+def search(request):
+    # 获取到用户提交的搜索关键词，字典的键值同模版中的 name 属性值
+    q = request.GET.get('q')
+    error_message = ''
+    # 根据 q 的值是否空设置相关信息
+    if not q:
+        error_message = 'Input Keyword'
+        return render(request, 'blog/home.html', locals())
+
+    # Q 对象用于包装查询表达式，其作用是为了提供复杂的查询逻辑
+    post_list = Post.objects.filter(Q(title__icontains=q) | Q(body__icontains=q))
+    return render(request, 'blog/home.html', locals())
