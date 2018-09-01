@@ -58,35 +58,33 @@ def post_detail(request, pk):
 class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/detail.html'
-    context_objects_name = 'post'
+    context_object_name = 'post'
 
-    # 方法返回一个 HttpResponse 实例
+    # 返回一个 HttpResponse 实例，只有当 get 方法被调用后才有 self.object 属性，即 post 实例
     def get(self, request, *args, **kwargs):
-        # get 方法会通过调用 get_object 和 get_context——data 方法对模版渲染
-        # def get(self, request, *args, **kwargs):
-        # self.object = self.get_object()
-        # context = self.get_context_data(object=self.object)
-        # return self.render_to_response(context)
         response = super(PostDetailView, self).get(request, *args, **kwargs)
-        # 只有当 get 方法被调用后才有 self.object 属性，即 post 实例
-        # 对应 post_detail 函数中的 post.increase_views()
+        # 自增操作，self.object 的值即 post 对象
         self.object.increase_views()
         return response
 
     # 根据 post 的 pk 值获取相应的 post 实例
     def get_object(self, queryset=None):
         post = super(PostDetailView, self).get_object(queryset=None)
-        post.body = markdown.markdown(post.body, extensions=[
+        # 通过获取 post 实例进行相应渲染操作
+        md = markdown.Markdown(extensions=[
             'markdown.extensions.extra',
             'markdown.extensions.codehilite',
+            'markdown.extensions.toc',
         ])
+
+        post.body = md.convert(post.body)
         return post
 
     # 返回一个字典，为模版变量字典，传递给相应的模版
-    def get_context(self, **kwargs):
-        context = super(PostDetailView, self).get_context(**kwargs)
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
         form = CommentForm()
-        # 更新 context 的内容，必须调用
+        comment_list = self.object.comment_set.all()
         context.update(locals())
         return context
 
@@ -152,3 +150,32 @@ class TagView(ListView):
     def get_queryset(self):
         tag = get_object_or_404(Tag, pk=self.kwargs.get('pk'))
         return super(TagView, self).get_queryset().filter(tags=tag)
+
+
+# ########################## ArchivesPage ############################
+def archives(request, year):
+    post_list = Post.objects.filter(create_time__year=year)
+    return render(request, "blog/index.html", locals())
+
+
+class ArchivesView(ListView):
+    model = Post
+    template_name = 'blog/index.html'
+    context_object_name = 'post_list'
+    paginate_by = 10
+
+    # 获取列表，该方法默认获取指定模型的全部列表数据，通过复写改变默认行为
+    def get_queryset(self):
+        # 在类视图中，从 URL 捕获的命名组参数值保存在实例的 kwargs 属性（是一个字典）里，
+        # 非命名组参数值保存在实例的 args 属性（是一个列表）里
+        year = self.kwargs.get('year')
+        # 复写，指定筛选的条件，获取相应条件的列表
+        return super(ArchivesView, self).get_queryset().filter(create_time__year=year)
+
+
+# 由于指定的属性同 HomeView，也可以直接继承 HomeView
+# 然后复写 get_queryset() 方法改变获取列表的默认行为达到相同效果
+class ArchivesView2(HomeView):
+    def get_queryset(self):
+        year = self.kwargs.get('year')
+        return super(ArchivesView2, self).get_queryset().filter(create_time__year=year)

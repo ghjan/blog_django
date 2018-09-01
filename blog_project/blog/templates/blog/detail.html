@@ -1,8 +1,6 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-{% load custom_filter %}
+{% extends 'blog/blog_base.html' %}
 
-{% block content %}
+{% block main %}
     <article class="post post-1">
         <header class="entry-header">
             <h1 class="entry-title">{{ post.title }}</h1>
@@ -82,4 +80,4 @@
             </ul>
         </div>
     </section>
-{% endblock %}
+{% endblock main %}

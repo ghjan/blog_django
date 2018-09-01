@@ -3,6 +3,7 @@ from django.conf.urls import url
 from .views.blog import *
 from .views.category import *
 from .views.post import *
+from .views.feeds import *
 
 # 加上 app_name, 值同 include 中 namespace 的值，否则可能会找不到 url
 app_name = 'blog'
@@ -12,7 +13,7 @@ urlpatterns = [
     url(r'^home/$', home, name='home'),
     # url(r'^home/$', HomeView.as_view(), name='home'),
     # url(r'cate/(?P<pk>[0-9]+)/$', views.category, name='cate'),
-    url(r'cate/(?P<pk>[0-9]+)/$', CategoryView.as_view(), name='category'),
+    url(r'category/(?P<pk>[0-9]+)/$', CategoryView.as_view(), name='category'),
     # url(r'post/(?P<pk>[0-9]+)/$', views.post_detail, name='post'),
     url(r'post/(?P<pk>[0-9]+)/$', PostDetailView.as_view(), name='detail'),
 
@@ -28,4 +29,10 @@ urlpatterns = [
     url(r'^tag/(?P<pk>[0-9]+)/$', tags, name='tags'),
     # url(r'^tag/(?P<pk>[0-9]+)/$', views.TagView.as_view(), name='tags'),
 
+    # url(r'^archives/(?P<year>[0-9]{4})/$', archives, name="archives"),
+    # url(r'^archives/(?P<year>[0-9]{4})/$', ArchivesView.as_view(), name="archives"),
+    url(r'^archives/(?P<year>[0-9]{4})/$', ArchivesView2.as_view(), name="archives"),
+
+    # rss url
+    url(r'^all/rss/$', AllPostFeed(), name='rss'),
 ]
