@@ -12,4 +12,8 @@ urlpatterns = [
     # 可以通过 http://localhost:8000/time/ahead/(offset)/ 来访问相应网址
     url(r'^time/ahead/(?P<offset>\d{1,2})/$', views.hours_ahead, name="time_ahead"),
     url(r'^index', views.index, name='index'),
+    url(r'^post/new/$', views.new_post, name='new_post'),
+    url(r'^contact/$', views.contact, name='contact'),
+    url(r'^full/$', views.FullPostView.as_view(), name='full'),
+    url(r'^about/$', views.about, name='about'),
 ]

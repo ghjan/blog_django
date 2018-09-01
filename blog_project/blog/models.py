@@ -1,18 +1,69 @@
 # _*_ coding: utf-8 _*_
 
+import markdown
+from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
+from django.utils.html import strip_tags
 
 
 class Category(models.Model):
-    # 可以通过第一个参数传入字符串设置别名
-    name = models.CharField("分类", max_length=100)
+    name = models.CharField(max_length=100)
 
-    # 查找 Category 时，返回为一个 object 如果不重写 __str__ 方法返回数据直接显示 Category Object，
-    # 重写该方法后，查找返回结果为该方法返回的值
     def __str__(self):
-        return '<Category>[{}]'.format(self.name)
+        return self.name
 
-    # 通过 Meta 来修改数据表的信息
     class Meta:
-        db_table = "category"  # 修改数据库表名，默认表名会是 项目名_模型名 blog_category
-        ordering = ['-id']  # 修改排序方式，"-" 表示逆序
+        # 指定表名为 category，默认为 blog-category
+        db_table = "category"
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = "tag"
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=70)
+    body = models.TextField()
+    create_time = models.DateTimeField()
+    modified_time = models.DateTimeField()
+    excerpt = models.CharField(max_length=200, blank=True)
+
+    # 加上 on_delete 属性，否则可能报错
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True)
+    author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
+    views = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        # reverse 会自动指向 'blog:post_detail' 所指向的 url，kwargs 为传入的参数值
+        return reverse('blog:detail', kwargs={'pk': self.pk})
+
+    def increase_views(self):
+        self.views += 1
+        # 指定更新字段，提高更新的效率
+        self.save(update_fields=['views', ])
+
+    def save(self, *args, **kwargs):
+        if not self.excerpt:
+            md = markdown.Markdown(extensions=[
+                'markdown.extensions.extra',
+                'markdown.extensions.codehilite',
+            ])
+            # strip_tags 作用是去除文本中的 html 标签
+            self.excerpt = strip_tags(md.convert(self.body))[:50]
+        super(Post, self).save(*args, **kwargs)
+
+    class Meta:
+        db_table = "post"
+        # 排序方式 - 为按照字段逆序
+        ordering = ['-create_time']
