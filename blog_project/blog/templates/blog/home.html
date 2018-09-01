@@ -8,11 +8,62 @@
 {% block content %}
     <h1>{{ welcome }}</h1>
     <hr/>
-    {% if post_list %}
-        {% for post in post_list %}
-            <h2>{{ post }}</h2>
-        {% endfor %}
-    {% endif %}
+    {% for post in post_list %}
+        <article class="post post-{{ post.pk }}">
+            <header class="entry-header">
+                <h1 class="entry-title">
+                    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                </h1>
+                <div class="entry-meta">
+                    <span class="post-category"><a
+                            href="{% url 'blog:category' post.category.pk %}">{{ post.category.name }}</a></span>
+                    <span class="post-date"><a href=""><time class="entry-date"
+                                                             datetime="2012-11-09T23:15:57+00:00">{{ post.create_time }}</time></a></span>
+                    <span class="post-author"><a href="">{{ post.author }}</a></span>
+                    <span class="comments-link"><a href="">{{ post.comment_set.count }} 评论</a></span>
+                    <span class="views-count"><a href="">{{ post.views }} 阅读</a></span>
+                </div>
+            </header>
+            <div class="entry-content clearfix">
+                <p>{{ post.excerpt }}...</p>
+                <div class="read-more cl-effect-14">
+                    <a href="{{ post.get_absolute_url }}" class="more-link">继续阅读<span class="meta-nav">→</span></a>
+                </div>
+            </div>
+        </article>
+    {% empty %}
+        <div class="no-post">暂时还没发布文章！</div>
+    {% endfor %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if post_list.has_previous %}
+                <a href="?page={{ post_list.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}
+            </span>
+
+            {% if post_list.has_next %}
+                <a href="?page={{ post_list.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
+
+{#    {% if is_paginated %}#}
+{#        <div class="pagination-simple">#}
+{#            {% if page_obj.has_previous %}#}
+{#                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>#}
+{#            {% endif %}#}
+{#            <span class="current">#}
+{#                 Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}#}
+{#         </span>#}
+{#            {% if page_obj.has_next %}#}
+{#                <a href="?page={{ page_obj.next_page_number }}">Next</a>#}
+{#            {% endif %}#}
+{#        </div>#}
+{#    {% endif %}#}
+
     <hr/>
     {% get_all_category as category_list %}
     <ul>
