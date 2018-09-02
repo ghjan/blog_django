@@ -1,5 +1,7 @@
 # _*_ coding: utf-8 _*_
 from django.conf.urls import url
+from rest_framework.urlpatterns import format_suffix_patterns
+
 from .views.blog import *
 from .views.category import *
 from .views.post import *
@@ -16,6 +18,7 @@ urlpatterns = [
     url(r'category/(?P<pk>[0-9]+)/$', CategoryView.as_view(), name='category'),
     # url(r'post/(?P<pk>[0-9]+)/$', views.post_detail, name='post'),
     url(r'post/(?P<pk>[0-9]+)/$', PostDetailView.as_view(), name='detail'),
+    url(r'^posts/$', PostList.as_view(), name='posts'),
 
     # ?P<offset> 为传递的参数字段名，紧随其后的是参数值的匹配正则
     # 可以通过 http://localhost:8000/time/ahead/(offset)/ 来访问相应网址
@@ -36,3 +39,5 @@ urlpatterns = [
     # rss url
     url(r'^all/rss/$', AllPostFeed(), name='rss'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

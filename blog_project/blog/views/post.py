@@ -5,11 +5,15 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from blog.forms import PostForm
 from blog.models import Post, Tag
 
 # 获取相应模型下的全部数据
+from blog_api.serializers import PostSerializer
 from comment.forms import CommentForm
 
 
@@ -179,3 +183,19 @@ class ArchivesView2(HomeView):
     def get_queryset(self):
         year = self.kwargs.get('year')
         return super(ArchivesView2, self).get_queryset().filter(create_time__year=year)
+
+
+class PostList(APIView):
+    # 定义 GET 请求的方法，内部实现相同 @api_view
+    def get(self, request, format=None):
+        posts = Post.objects.all()
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 定义 POST 请求的方法
+    def post(self, request, format=None):
+        serializer = PostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
