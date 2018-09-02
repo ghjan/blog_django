@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 from rest_framework import serializers
-from blog.models import Post
+from blog.models import Post, Author, Tag
 
 
 # serializer 类需要继承 serializers.Serializer，
@@ -28,12 +28,41 @@ class PostSerializer(serializers.Serializer):
         instance.excerpt = validated_data.get('excerpt', instance.excerpt)
 
 
-# ModelSeralizer 会自动帮我们实现 update 和 create 方法
-class PostModelSerializer(serializers.ModelSerializer):
+# # ModelSeralizer 会自动帮我们实现 update 和 create 方法
+# class PostModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Post
+#         # result 接口需要返回的字段，可以指定 "__all__" 展示全部参数
+#         fields = ['title', 'body', 'create_time', 'modified_time', 'excerpt', 'category', 'tags', 'modified_time',
+#                   'views']
+#         # exclude 为不展示的字段名，和 fields author
+#         # exclude = ['id', 'author']
+
+
+# 然后我们需要给新增的 model 创建 serializer
+class AuthorSerializer(serializers.ModelSerializer):
+    # 会显示所有该 author 下的 posts
+    posts = serializers.PrimaryKeyRelatedField(many=True, queryset=Post.objects.all())
+
+    class Meta:
+        model = Author
+        fields = '__all__'
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = '__all__'
+
+
+class PostSerializer(serializers.ModelSerializer):
+    # ForeignKey 链表结构字段处理，有两种处理方式，第一种展示 serializer 中设置的字段，
+    # 第二种展示某个指定字段
+    # author = AuthorSerializer(read_only=True)
+    author_name = serializers.ReadOnlyField(source="author.username")
+    # ManyToMany 链表结构字段处理
+    tag = TagSerializer(many=True, read_only=True)
+
     class Meta:
         model = Post
-        # result 接口需要返回的字段，可以指定 "__all__" 展示全部参数
-        fields = ['title', 'body', 'create_time', 'modified_time', 'excerpt', 'category', 'tags', 'modified_time',
-                  'views']
-        # exclude 为不展示的字段名，和 fields author
-        # exclude = ['id', 'author']
+        fields = '__all__'

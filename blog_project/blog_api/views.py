@@ -5,7 +5,7 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser
 from blog.models import Post
-from .serializers import PostModelSerializer
+from .serializers import PostSerializer
 
 
 @csrf_exempt
@@ -13,13 +13,13 @@ def post_list(request):
     # 如果是 GET 请求则返回所有的列表
     if request.method == "GET":
         posts = Post.objects.all()
-        serializer = PostModelSerializer(posts, many=True)
+        serializer = PostSerializer(posts, many=True)
         return JsonResponse(serializer.data, safe=False)
     # 如果是 POST 请求则保存数据
     elif request.method == "POST":
         # 将 request 中的参数取出来进行序列化
         data = JSONParser().parse(request)
-        serializer = PostModelSerializer(data=data)
+        serializer = PostSerializer(data=data)
         # 判断是否有效的数据
         if serializer.is_valid():
             # 有效数据保存，返回 201 CREATED
@@ -39,7 +39,7 @@ def post_detail(request, pk):
         return HttpResponse(status=404)
     # 如果 request 是 GET 方法，则直接展示对应 pk 的 post
     if request.method == 'GET':
-        serializer = PostModelSerializer(post)
+        serializer = PostSerializer(post)
         # 将序列化后的数据转换成 json 展示
         return JsonResponse(serializer.data)
     # 如果 request 是 PUT 方法，则解析 request 中的参数，
@@ -47,7 +47,7 @@ def post_detail(request, pk):
     elif request.method == 'PUT':
         data = JSONParser().parser(request)
         # 更新 post 的值
-        serializer = PostModelSerializer(post, data=data)
+        serializer = PostSerializer(post, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)

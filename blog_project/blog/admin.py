@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 from django.contrib import admin
-from blog.models import Post, Category, Tag
+from blog.models import Post, Category, Tag, Author
 
 
 @admin.register(Post)
@@ -20,6 +20,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
     pass
 
 
