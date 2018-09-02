@@ -9,4 +9,6 @@ app_name = 'api'
 
 urlpatterns = [
     url(r'^posts/$', views.post_list, name="api_posts"),
+    url(r'^post/(?P<pk>\d+)/$', views.post_detail, name='api_post'),
+
 ]

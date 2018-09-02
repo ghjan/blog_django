@@ -26,3 +26,13 @@ class PostSerializer(serializers.Serializer):
         instance.create_time = validated_data.get('create_time', instance.create_time)
         instance.modified_time = validated_data.get('modified_time', instance.modified_time)
         instance.excerpt = validated_data.get('excerpt', instance.excerpt)
+
+
+# ModelSeralizer 会自动帮我们实现 update 和 create 方法
+class PostModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        # result 接口需要返回的字段，可以指定 "__all__" 展示全部参数
+        fields = ['title', 'body', 'create_time', 'modified_time', 'excerpt']
+        # exclude 为不展示的字段名，和 fields 不能同时设置
+        # exclude = ['id', 'author']
