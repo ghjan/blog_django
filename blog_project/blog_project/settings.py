@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'comment',
     'rest_framework',
     'blog_api',
+    'django_filters',
+
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -126,8 +128,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'common_static'),
                     # os.path.join(BASE_DIR, 'media'),
                     )
+
 REST_FRAMEWORK = {
     # 配置全局分页类型和每页数量
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
+    # 配置过滤器
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

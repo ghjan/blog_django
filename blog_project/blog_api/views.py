@@ -2,8 +2,10 @@
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 
 from blog.models import Post
+from blog_api.filters import PostFilter
 from blog_api.pagination import StandardPagination
 from .serializers import PostSerializer
 
@@ -12,6 +14,11 @@ class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = StandardPagination
+    filter_backends = (DjangoFilterBackend,)
+    # # 使用 title 作为另一个筛选条件
+    # filter_fields = ['title']
+    # 指定筛选类
+    filter_class = PostFilter
 
     # 推荐重写该方法，默认返回 status.HTTP_204_NO_CONTENT，
     # 会返回空信息，个人觉得不方便判断，当然按照个人喜好决定

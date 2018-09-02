@@ -4,4 +4,6 @@ djangorestframework-jwt
 pymysql
 markdown
 httpie
+django-filter
+
 
