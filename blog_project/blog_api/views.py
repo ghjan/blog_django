@@ -4,12 +4,14 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from blog.models import Post
+from blog_api.pagination import StandardPagination
 from .serializers import PostSerializer
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    pagination_class = StandardPagination
 
     # 推荐重写该方法，默认返回 status.HTTP_204_NO_CONTENT，
     # 会返回空信息，个人觉得不方便判断，当然按照个人喜好决定

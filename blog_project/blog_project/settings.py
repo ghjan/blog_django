@@ -126,3 +126,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'common_static'),
                     # os.path.join(BASE_DIR, 'media'),
                     )
+REST_FRAMEWORK = {
+    # 配置全局分页类型和每页数量
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
+}
