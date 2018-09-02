@@ -28,6 +28,10 @@ class Tag(models.Model):
         db_table = "tag"
 
 
+class Author(models.Model):
+    username = models.CharField(max_length=100)
+
+
 class Post(models.Model):
     title = models.CharField(max_length=70)
     body = models.TextField()
@@ -37,9 +41,11 @@ class Post(models.Model):
 
     # 加上 on_delete 属性，否则可能报错
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(Tag, blank=True)
-    author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
     views = models.PositiveIntegerField(default=0)
+    # author = models.ForeignKey(User, related_name='posts', on_delete=models.CASCADE)
+    # tags = models.ManyToManyField(Tag, blank=True)
+    author = models.ForeignKey(Author, related_name='posts', on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
 
     def __str__(self):
         return self.title
