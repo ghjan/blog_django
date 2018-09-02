@@ -10,8 +10,8 @@ from . import views
 app_name = 'api'
 
 urlpatterns = [
-    url(r'^posts/$', views.PostListMixins.as_view(), name="api_posts"),
-    url(r'^post/(?P<pk>\d+)/$', views.PostDetailMixin.as_view(), name='api_post'),
+    url(r'^posts/$', views.PostListView.as_view(), name="api_posts"),
+    url(r'^post/(?P<pk>\d+)/$', views.PostDetailView.as_view(), name='api_post'),
 ]
 # 增加这一行，这样我们就不需要逐一地添加对格式支持的 url 样式
 urlpatterns = format_suffix_patterns(urlpatterns)
