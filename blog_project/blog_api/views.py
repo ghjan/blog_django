@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from rest_framework.generics import get_object_or_404
 from rest_framework.parsers import JSONParser
-from .models import Post
+from blog.models import Post
 from .serializers import PostModelSerializer
 
 

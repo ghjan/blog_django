@@ -1,7 +1,7 @@
 # _*_ coding: utf-8 _*_
 
 from rest_framework import serializers
-from .models import Post
+from blog.models import Post
 
 
 # serializer 类需要继承 serializers.Serializer，
@@ -33,6 +33,7 @@ class PostModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         # result 接口需要返回的字段，可以指定 "__all__" 展示全部参数
-        fields = ['title', 'body', 'create_time', 'modified_time', 'excerpt']
-        # exclude 为不展示的字段名，和 fields 不能同时设置
+        fields = ['title', 'body', 'create_time', 'modified_time', 'excerpt', 'category', 'tags', 'modified_time',
+                  'views']
+        # exclude 为不展示的字段名，和 fields author
         # exclude = ['id', 'author']
