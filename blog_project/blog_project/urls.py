@@ -10,5 +10,6 @@ urlpatterns = [
     # 后面不可以添加 "$" 符号，不然会导致不能匹配到地址，namespace 为了区分不同应用下同名的模版
     url(r'^blog/', include('blog.urls', namespace="blog")),
     url(r'^comment/', include('comment.urls', namespace="comment")),
-
+    # 配置 blog_api 的 url
+    url(r'^api/', include('blog_api.urls', namespace='api')),
 ]
